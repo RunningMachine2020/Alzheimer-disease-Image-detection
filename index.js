@@ -20,8 +20,8 @@ function imageUploaded(event) {
     reader.onload = readerEvent => {
         let img = document.createElement('img');
         img.src = readerEvent.target.result;
-        img.width = 128;
-        img.height = 128;
+        img.width = 224;
+        img.height = 224;
         img.onload = () => makePrediction(img);
     };
 
@@ -37,7 +37,7 @@ function makePrediction(img) {
 function normalizeImage(img) {
     return tf.tidy(() => {
         const tensorImage = tf.browser.fromPixels(img, 1).toFloat();
-        const resized_image = tensorImage.resizeNearestNeighbor([128, 128]);
+        const resized_image = tensorImage.resizeNearestNeighbor([224, 224]);
     
         const offset = tf.scalar(127.5);
         const normalized_image = resized_image.div(offset).sub(tf.scalar(1.0));
@@ -66,8 +66,8 @@ function predict_and_print_maps(batched_image, resized_image) {
     const ad_percentage = (predictions[0] * 100).toFixed(4);
     const cn_percentage = (predictions[1] * 100).toFixed(4);
 
-    firstClass.innerHTML = `Alzheimer's disease: ${ad_percentage}`;
-    secondClass.innerHTML = `Cognitively Normal: ${cn_percentage}`;
+    firstClass.innerHTML = `Normal: ${ad_percentage}`;
+    secondClass.innerHTML = `PNEUMONIA: ${cn_percentage}`;
 
     loadingGif.style.display = "none";
 
@@ -198,7 +198,7 @@ function ready() {
 
 function runExample() {
     loadingGif.style.display = "block";
-    const url = "/projects/alzheimer/img.jpg";
+    const url = "/assets/image.jpg";
     let img = new Image(200, 200);
     img.src = url;
 
@@ -217,5 +217,5 @@ let loadingGif;
 let activationCanvas;
 
 (async function() {
-    model = await tf.loadLayersModel('/projects/alzheimer/model/model.json');
+    model = await tf.loadLayersModel('/assets/model/model.json');
 })();
